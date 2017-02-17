@@ -6,7 +6,7 @@
 
 from flask import Flask
 from app.datasource import db, redis_store
-from flask.ext.session import Session
+from flask_session import Session
 
 sess = Session()
 
@@ -23,6 +23,10 @@ def create_app(config_name=None):
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
+
+    # 授权
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
     @app.teardown_request
     def shutdown_session(exception=None):
