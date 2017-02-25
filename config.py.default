@@ -33,4 +33,14 @@ ROOT_PATH = '/home/ymserver/vhost/gateway/flask_celery'
 LOG_PATH = "/home/ymserver/log/flask_celery/production-default.log" # 默认日志路径
 
 # 静态文件url
-CM_STATIC_URL = 'http://jt.coosport.cn/static/'
+CM_STATIC_URL = 'http://127.0.0.1:5000/static/'
+
+# celery队列
+CELERY_BROKER_URL = 'redis://localhost:6379/10'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/10'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TIMEZONE = 'Asia/Shanghai'
+CELERY_ENABLE_UTC = True
+CELERYD_LOG_COLOR = False

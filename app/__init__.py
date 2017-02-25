@@ -7,6 +7,10 @@
 from flask import Flask
 from app.datasource import db, redis_store
 from flask_session import Session
+from celery import Celery
+from config import CELERY_BROKER_URL
+
+celery = Celery(__name__, broker=CELERY_BROKER_URL)
 
 sess = Session()
 
@@ -24,12 +28,30 @@ def create_app(config_name=None):
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
 
+    celery = make_celery(app)
+
     # 授权
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    # 任务
+    from .task import task as task_blueprint
+    app.register_blueprint(task_blueprint, url_prefix='/task')
 
     @app.teardown_request
     def shutdown_session(exception=None):
         db.remove()
 
     return app
+
+def make_celery(app):
+    # celery = Celery(broker=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+    celery.Task = ContextTask
+    return celery
