@@ -5,7 +5,7 @@
 # @version 2017-02-17
 
 import pickle
-from app.datasource import redis_store
+from app.datasource import redis_store, db
 from flask import request, make_response
 from functools import wraps
 from app.common.constant import Duration
@@ -55,7 +55,7 @@ def single_raw_query(sql):
     # 原生sql查询单行数据
 
     # 查询数据库
-    record = db.session.execute(sql)
+    record = db.execute(sql)
 
     # 获取第一条记录
     row = record.first() if record.rowcount else {}
@@ -68,7 +68,7 @@ def multi_raw_query(sql):
     # 原生sql查询多行数据
 
     # 查询数据库
-    record = db.session.execute(sql)
+    record = db.execute(sql)
 
     final = [{key: value for key, value in row.items()} for row in record]
 
