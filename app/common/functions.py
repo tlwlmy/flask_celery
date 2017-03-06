@@ -95,7 +95,7 @@ class CJsonEncoder(json.JSONEncoder):
 
 def md5(raw_str):
     # md5加密
-    return hashlib.new('md5', str(raw_str)).hexdigest()
+    return hashlib.md5(raw_str.encode(encoding='utf-8')).hexdigest()
 
 def parse_dict(final):
     # 拼接字典参数

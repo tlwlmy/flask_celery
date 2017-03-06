@@ -38,6 +38,10 @@ def create_app(config_name=None):
     from .task import task as task_blueprint
     app.register_blueprint(task_blueprint, url_prefix='/task')
 
+    # 测试
+    from .test import test as test_blueprint
+    app.register_blueprint(test_blueprint, url_prefix='/test')
+
     @app.teardown_request
     def shutdown_session(exception=None):
         db.remove()
