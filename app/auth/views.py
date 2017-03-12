@@ -5,14 +5,14 @@
 # @version 2017-02-17
 
 from app.auth import auth
-from flask import session
+from flask import session, render_template
 from app.auth.auth_db import auth_db
 from app.common.functions import api_response
 from app.validate.functions import validate_params
 
-@auth.route('/')
+@auth.route('/index', methods=['GET', 'POST'])
 def index():
-    return api_response({'c': 0})
+    return 'Hello world!'
 
 @auth.route('/insert', methods=['POST'])
 @validate_params
@@ -27,3 +27,8 @@ def insert(params):
         auth_db.update_user(params['user_info'], params['input'])
 
     return api_response({'c': 0})
+
+@auth.route('/admin')
+def admin():
+    # 后台框架页面
+    return render_template('index.html')
