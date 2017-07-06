@@ -5,13 +5,13 @@
 # @version 2017-02-17
 
 from sqlalchemy.ext.declarative import declarative_base
-from app.datasource import db
+from app import db
 from functools import wraps
 from app.common.functions import filter_fields, compare_fields
 
 base = declarative_base()
 
-class Base(base):
+class Base(db.Model):
     __abstract__ = True
 
     def validate(self):
@@ -20,9 +20,9 @@ class Base(base):
     def save(self, validate=True, commit=False):
         if validate is True:
             self.validate()
-        db.add(self)
+        db.session.add(self)
         if commit is True:
-            db.commit()
+            db.session.commit()
 
     def _asdict(self):
         # 获取参数字典
@@ -61,7 +61,7 @@ def update_filter(white_fields=[]):
             if kwargs['modify_info']:
                 # 更新
                 affected_row = func(*args, **kwargs)
-                db.commit()
+                db.session.commit()
 
                 return affected_row, kwargs['modify_info']
 
