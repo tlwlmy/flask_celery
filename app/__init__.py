@@ -5,19 +5,23 @@
 # @version 2017-02-16
 
 from flask import Flask
-from app.datasource import db, redis_store
+from app.datasource import redis_store
 from flask_session import Session
 from celery import Celery
 from config import CELERY_BROKER_URL
+from flask_sqlalchemy import SQLAlchemy
 
 celery = Celery(__name__, broker=CELERY_BROKER_URL)
 
 sess = Session()
 
+db = SQLAlchemy()
+
 def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object('config')
     sess.init_app(app)
+    db.init_app(app)
 
     import logging
     from logging.handlers import RotatingFileHandler
@@ -44,7 +48,7 @@ def create_app(config_name=None):
 
     @app.teardown_request
     def shutdown_session(exception=None):
-        db.remove()
+        db.session.remove()
 
     return app
 

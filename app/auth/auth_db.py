@@ -4,7 +4,8 @@
 # @author tlwlmy
 # @version 2017-02-17
 
-from app.datasource import redis_store, db
+from app.datasource import redis_store
+from app import db
 from app.common.decorator import cached
 from app.common.constant import Duration
 from .models import User
@@ -16,7 +17,7 @@ class AuthDb(object):
     def query_user_by_name(self, name):
         # 根据用户姓名查询用户信息
 
-        record = db.query(User).filter(User.name==name).first()
+        record = User.query.filter(User.name==name).first()
 
         return record
 

@@ -5,7 +5,8 @@
 # @version 2017-02-17
 
 import pickle
-from app.datasource import redis_store, db
+from app.datasource import redis_store
+from app import db
 from flask import request, make_response
 from functools import wraps
 from app.common.constant import Duration
