@@ -10,9 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from pymongo import MongoClient
 import config
-
 engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
-db = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
 redis_store = StrictRedis(
     host=config.REDIS['host'],
