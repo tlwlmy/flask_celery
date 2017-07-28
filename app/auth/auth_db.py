@@ -8,38 +8,47 @@ from app.datasource import redis_store
 from app import db
 from app.common.decorator import cached
 from app.common.constant import Duration
+from app.common.base import model_insert, model_update
 from .models import User
 
 class AuthDb(object):
-    # 授权信息
+    """ 授权信息 """
+
+    @cached(timeout=Duration.HalfHour)
+    def query_user_lists(self, offset, limit):
+        """ 查询用户列表 """
+
+        record = User.query.offset(offset).limit(limit).all()
+
+        return record
 
     @cached(timeout=Duration.HalfHour)
     def query_user_by_name(self, name):
-        # 根据用户姓名查询用户信息
+        """ 根据用户姓名查询用户信息 """
 
         record = User.query.filter(User.name==name).first()
 
         return record
 
     def insert_user(self, modify_info):
-        # 插入用户信息
+        """ 插入用户信息 """
 
-        record = User.insert(modify_info=modify_info)
-
-        # 更新uid查询缓存
-        cache_key = "query_user_by_name:{0}".format(record.name)
-        redis_store.delete(cache_key)
+        record = model_insert(User, modify_info)
 
         # 格式化参数
         final = record._asdict()
 
+        # 更新uid查询缓存
+        cache_key = "query_user_by_name:{0}".format(final['name'])
+        redis_store.delete(cache_key)
+
         return final
 
     def update_user(self, record, modify_info):
-        # 更新用户信息
+        """ 更新用户信息 """
 
         # 更新跳转链接信息
-        affected_rows, final = User.update(record=record, modify_info=modify_info)
+        affected_rows, final = model_update(User, record, modify_info)
 
         # 无更新信息，直接返回
         if not final:
