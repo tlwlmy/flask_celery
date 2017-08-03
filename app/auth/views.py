@@ -17,7 +17,7 @@ def index():
 @auth.route('/insert', methods=['POST'])
 @validate_params
 def insert(params):
-    # 插入用户
+    """ 插入用户 """
 
     # 查询用户名信息
     params['user_info'] = auth_db.query_user_by_name(params['input']['name'])
@@ -30,5 +30,20 @@ def insert(params):
 
 @auth.route('/admin')
 def admin():
-    # 后台框架页面
+    """ 后台框架页面 """
+
     return render_template('index.html')
+
+@auth.route('/lists', methods=['POST'])
+@validate_params
+def lists(params):
+    """ 插入用户 """
+
+    params['p'] = params['input']['p']
+    params['l'] = params['input']['l']
+    offset = (params['p'] - 1) * params['l']
+
+    # 查询用户列表
+    lists = auth_db.query_user_lists(offset, params['input']['l'])
+
+    return api_response({'c': 0})

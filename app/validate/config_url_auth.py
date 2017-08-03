@@ -6,7 +6,7 @@
 
 from app.common.functions import url_dict_params
 
-auth_url_params = {
+config_url_auth = {
     'login': {
         'GET': {},
         'POST': {
