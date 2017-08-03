@@ -9,7 +9,7 @@ from app import db
 from app.common.base import Base
 
 class User(Base):
-    # 用户
+    """ 用户 """
     __tablename__ = 'user'
     uid = db.Column('uid', db.Integer, primary_key=True)    # 用户id
     name = db.Column('name', db.String(64))    # 用户名

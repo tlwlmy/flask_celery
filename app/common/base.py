@@ -15,6 +15,8 @@ class Base(db.Model):
         pass
 
     def save(self, validate=True, commit=False):
+        """ 保存 """
+
         if validate is True:
             self.validate()
         db.session.add(self)
@@ -22,7 +24,7 @@ class Base(db.Model):
             db.session.commit()
 
     def _asdict(self):
-        # 获取参数字典
+        """ 获取参数字典 """
 
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
@@ -48,7 +50,7 @@ def model_update(obj, record, modify_info):
     modify_info = compare_fields(obj._update_fields, record, modify_info)
 
     if not modify_info:
-        return 0, {}
+        return {}
 
     # 获取主键
     primary_key = get_primary_key(obj)
@@ -57,4 +59,4 @@ def model_update(obj, record, modify_info):
     affected_row = obj.query.filter(getattr(obj, primary_key)==record[primary_key]).update(modify_info)
     db.session.commit()
 
-    return affected_row, modify_info
+    return modify_info

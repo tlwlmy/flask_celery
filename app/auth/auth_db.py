@@ -6,7 +6,7 @@
 
 from app.datasource import redis_store
 from app import db
-from app.common.decorator import cached
+from app.common.decorator import cached, del_cached
 from app.common.constant import Duration
 from app.common.base import model_insert, model_update
 from .models import User
@@ -30,6 +30,7 @@ class AuthDb(object):
 
         return record
 
+    @del_cached(keys=['modify_info'])
     def insert_user(self, modify_info):
         """ 插入用户信息 """
 
@@ -38,27 +39,17 @@ class AuthDb(object):
         # 格式化参数
         final = record._asdict()
 
-        # 更新uid查询缓存
-        cache_key = "query_user_by_name:{0}".format(final['name'])
-        redis_store.delete(cache_key)
-
         return final
 
+    @del_cached(keys=['record', 'modify_info'], check=True)
     def update_user(self, record, modify_info):
         """ 更新用户信息 """
 
         # 更新跳转链接信息
-        affected_rows, final = model_update(User, record, modify_info)
+        final = model_update(User, record, modify_info)
 
-        # 无更新信息，直接返回
-        if not final:
-            return 0
+        return final
 
-        # 更新uid查询缓存
-        cache_key = "query_user_by_name:{0}".format(record['name'])
-        redis_store.delete(cache_key)
-
-        return affected_rows
 
 # 实例
 auth_db = AuthDb()
