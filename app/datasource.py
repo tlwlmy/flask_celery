@@ -6,11 +6,8 @@
 
 
 from redis import StrictRedis
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 from pymongo import MongoClient
 import config
-engine = create_engine(config.SQLALCHEMY_DATABASE_URI)
 
 redis_store = StrictRedis(
     host=config.REDIS['host'],

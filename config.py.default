@@ -14,7 +14,13 @@ PORT = 5001
 
 MONGO_URI = "mongodb://127.0.0.1:27017"
 
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:tlwlmy@127.0.0.1:3306/dream?charset=utf8'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://tlwlmy:pass@127.0.0.1:3306/dream?charset=utf8'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+# 数据库路由选择
+SQLALCHEMY_BINDS = {
+    'test': 'mysql+pymysql://tlwlmy:pass@127.0.0.1:3306/test?charset=utf8'
+}
 
 REDIS = {
     'host': 'localhost',
