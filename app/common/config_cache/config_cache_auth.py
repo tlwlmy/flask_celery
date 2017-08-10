@@ -31,6 +31,8 @@ def update_user(final):
 config_cache_auth = {
     'auth_db': {
         'insert_user': insert_user,
+        'insert_multi_user': insert_user,
         'update_user': update_user,
+        'update_multi_user': update_user,
     },
 }

@@ -10,28 +10,39 @@ from app import db
 from flask import request, make_response
 from functools import wraps
 from app.common.constant import Duration
+from app.common.functions import multi_lists_intersection
 
 def format_record(record, rtype, dict_keys):
     """
     格式化记录
-    @params rtype str: 返回类型 list表示列表 dict表示字典
-    @params dict_keys list: 字典类型key列表
+    @params list|dict record: 数据
+    @params str rtype: 返回类型 list表示列表 dict表示字典
+    @params list dict_keys: 字典类型key列表
+    @return list|dict
     """
 
     if isinstance(record, list) and rtype == 'dict':
         # 生产多重key数据
         final = {}
+
+        # keys长度
         dict_keys_len = len(dict_keys)
+
         for row in record:
             # 利用字典可变性质，一层层生产字典
             r = final
             for index in range(0, dict_keys_len):
                 key = row[dict_keys[index]]
+
+                # 字典不存在则生成一个
                 if key not in r.keys():
                     r[key] = {}
+
+                # 到达最后一个key，直接指向当前行
                 if index == dict_keys_len - 1:
                     r[key] = row
                 r = r[key]
+
         return final
 
     return record
@@ -93,7 +104,7 @@ def format_query_record(record, qtype):
 
     return record
 
-def query_type(qtype='single_orm_query'):
+def query_type(qtype='single_orm_query', rtype='list', dict_keys=[]):
     """ 查询缓存数据 """
     def wrapper_fun(func):
         @wraps(func)
@@ -101,7 +112,12 @@ def query_type(qtype='single_orm_query'):
             """ _wrapper_fun"""
 
             # 根据查询类型查询
-            return format_query_record(func(*args, **kwargs), qtype)
+            record = format_query_record(func(*args, **kwargs), qtype)
+
+            # 格式化查询参数
+            final = format_record(record, rtype, dict_keys)
+
+            return final
         return _wrapper_fun
     return wrapper_fun
 
@@ -136,6 +152,8 @@ def cached(prefix=None, rtype='list', dict_keys=[], timeout=Duration.HalfHour, f
             if final is None:
                 # 查询数据库，格式数据库数据
                 record = format_query_record(func(*args, **kwargs), qtype)
+
+                # 格式化查询参数
                 final = format_record(record, rtype, dict_keys)
 
                 # 序列化参数，写缓存，设置缓存有效时间
@@ -150,7 +168,7 @@ def cached(prefix=None, rtype='list', dict_keys=[], timeout=Duration.HalfHour, f
         return _wrapper_fun
     return wrapper_fun
 
-def del_cached(keys=['record', 'modify_info'],  func_type='class', check=False):
+def del_cached(keys=['record', 'modify_info'], func_type='class', check=False):
     """ 删除缓存 """
     def wrapper_fun(func):
         @wraps(func)
@@ -179,6 +197,57 @@ def del_cached(keys=['record', 'modify_info'],  func_type='class', check=False):
             from app.common.config_cache.functions import get_config_cache_map
             config_cache_map = get_config_cache_map(func.__module__)
             config_cache_map[func.__name__](final)
+
+            return result
+
+        return _wrapper_fun
+    return wrapper_fun
+
+def del_multi_cached(keys=['record', 'modify_info'], func_type='class', rtype='dict'):
+    """ 批量删除缓存 """
+    def wrapper_fun(func):
+        @wraps(func)
+        def _wrapper_fun(*args, **kwargs):
+            """ _wrapper_fun"""
+
+            # 查找参数初始坐标
+            init_index = 1 if func_type == 'class' else 0
+
+            # 格式参数
+            final = {keys[index]: args[init_index + index] for index in range(0, len(keys))}
+
+            # 检查字典是是否包含result键
+            if 'result' in final.keys():
+                raise Exception('result cannot in keys when delete cache')
+
+            # 获取方法返回值
+            result = func(*args, **kwargs)
+            final['result'] = result
+
+            # 删除缓存
+            from app.common.config_cache.functions import get_config_cache_map
+            config_cache_map = get_config_cache_map(func.__module__)
+
+            # 检查数据类型
+            if rtype == 'list':
+                # 查询类别长度最小的key值
+                min_len = min([len(final[key]) for key in keys])
+
+                # 批量删除缓存
+                for index in range(0, min_len):
+                    data = {key: final[key][index] for key in keys}
+                    data['result'] = final['result'][index]
+                    config_cache_map[func.__name__](data)
+            else:
+                # 获取多个列表keys交集
+                ekeys = multi_lists_intersection([final[key].keys() for key in keys])
+
+                # 批量删除缓存
+                for ekey in ekeys:
+                    if final['result'][ekey]:
+                        data = {key: final[key][ekey] for key in keys if final[key][ekey]}
+                        data['result'] = final['result'][ekey]
+                        config_cache_map[func.__name__](data)
 
             return result
 
