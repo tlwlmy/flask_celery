@@ -60,3 +60,45 @@ def model_update(obj, record, modify_info):
     db.session.commit()
 
     return modify_info
+
+def model_insert_multi(obj, modify_info):
+    """
+    批量插入
+    @params record dict: 返回类型 list表示列表 dict表示字典
+    @params modify_info dict: 字典类型key列表
+    """
+
+    # 过滤列表参数
+    for index in range(0, len(modify_info)):
+        modify_info[index] = filter_fields(obj._insert_fields, modify_info[index])
+
+    # 批量插入
+    record = [obj(**modify_info[index]) for index in range(0, len(modify_info))]
+    db.session.add_all(record)
+    db.session.commit()
+
+    return record
+
+def model_update_multi(obj, record, modify_info):
+    """
+    批量更新
+    @params record dict: 返回类型 list表示列表 dict表示字典
+    @params modify_info dict: 字典类型key列表
+    """
+
+    # 过滤列表参数
+    for ukey in modify_info.keys():
+        if ukey in record.keys():
+            modify_info[ukey] = compare_fields(obj._update_fields, record[ukey], modify_info[ukey])
+
+    # 获取主键
+    primary_key = get_primary_key(obj)
+
+    # 更新列表数据
+    for ukey in modify_info.keys():
+        if modify_info[ukey] and ukey in record.keys():
+            affected_row = obj.query.filter(getattr(obj, primary_key)==record[ukey][primary_key]).update(modify_info[ukey])
+
+    db.session.commit()
+
+    return modify_info
