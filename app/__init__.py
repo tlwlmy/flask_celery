@@ -12,9 +12,7 @@ from config import CELERY_BROKER_URL
 from flask_sqlalchemy import SQLAlchemy
 
 celery = Celery(__name__, broker=CELERY_BROKER_URL)
-
 sess = Session()
-
 db = SQLAlchemy()
 
 def create_app(config_name=None):
