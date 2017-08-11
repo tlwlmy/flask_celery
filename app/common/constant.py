@@ -12,8 +12,8 @@ CM_SATIC_PATH = os.path.join(CM_ROOT_PATH, 'app/static')    # 静态文件目录
 # 用户
 USER_DEFAULT_HEAD_IMG_URL = 'http://{0}/static/headimg/headimg.png'    # 微信用户默认头像
 
-# 微信用户加密密钥
-WECHAT_USER_ENCRYPT_SECRET = 'a0d56f733398f1d7186a3119624f07ba'
+# AES加密密钥
+AES_ENCRYPT_SECRET = 'df23b1699fba9ec7bd4b7bbc57d46e6b'
 
 # 公众号类型
 APP_WECHAT_TYPE_AUTH_SERVER      = 0    # 认证服务号
