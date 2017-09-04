@@ -10,10 +10,10 @@ from app.common.decorator import del_cached_lists
 def insert_user(final): 
     """ 插入用户配置 """
 
-    cache_keys = {
+    cache_keys = [
         'query_user_by_name:{0}'.format(final['modify_info']['name']),
         'query_user_by_uid:{0}'.format(final['result']['uid']),
-    }
+    ]
     
     return cache_keys
 
@@ -21,10 +21,10 @@ def insert_user(final):
 def update_user(final): 
     """ 更新用户配置 """
 
-    cache_keys = {
+    cache_keys = [
         'query_user_by_name:{0}'.format(final['record']['name']),
         'query_user_by_uid:{0}'.format(final['record']['uid']),
-    }
+    ]
     
     return cache_keys
 
