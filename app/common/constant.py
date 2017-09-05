@@ -7,7 +7,7 @@
 import os
 
 CM_ROOT_PATH = os.getcwd()    # 根目录
-CM_SATIC_PATH = os.path.join(CM_ROOT_PATH, 'app/static')    # 静态文件目录
+CM_STATIC_PATH = os.path.join(CM_ROOT_PATH, 'app/static')    # 静态文件目录
 
 # 用户
 USER_DEFAULT_HEAD_IMG_URL = 'http://{0}/static/headimg/headimg.png'    # 微信用户默认头像
@@ -33,6 +33,11 @@ BACKGROUND_LOGIN_PASSWORD  = 'jitui123'   # 后台登录用户密码
 
 # 微信用户授权跳转链接
 USER_WECHAT_AUTH_URL = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope={scope}&state={state}#wechat_redirect'
+
+# 运营后台保存图片格式
+PICTURE_TYPE_PNG        = 1     # png格式
+PICTURE_TYPE_GIF        = 2     # gif格式
+PICTURE_TYPE_JPG        = 3     # jpg格式
 
 # 缓存的有效时间
 class Duration:

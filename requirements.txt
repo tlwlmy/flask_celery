@@ -12,3 +12,4 @@ gunicorn==19.7.0
 meinheld==0.6.1
 gevent==1.2.1
 pycrypto==2.6.1
+boto3==1.4.7
