@@ -5,11 +5,12 @@
 # @version 2017-02-17
 
 
-import json, random, string, hashlib
+import json, random, string, hashlib, os
 from decimal import Decimal
 from flask import jsonify, make_response, request
 from datetime import date, datetime
 from functools import wraps, reduce
+from app.common.constant import CM_STATIC_PATH
 
 def api_response(contents, code=200):
     """返回API的响应
@@ -169,3 +170,20 @@ def multi_lists_intersection(multi_lists):
     multi_lists = [set(lists) for lists in multi_lists]
 
     return list(reduce(lambda x,y:x&y, multi_lists))
+
+def save_stream_img(filename, icon):
+    """
+    保存图片
+    """
+
+    # 文件位置
+    target = os.path.join(CM_STATIC_PATH, filename)
+
+    # 检查目录存不存在,如果不存在新建一个
+    if not os.path.exists(os.path.dirname(target)):
+        os.makedirs(os.path.dirname(target))
+
+    with open(target,'wb') as up:
+        up.write(icon)
+
+    return target

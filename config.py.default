@@ -52,3 +52,17 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_ENABLE_UTC = True
 CELERYD_LOG_COLOR = False
+
+AWS = {
+    'access_key_id': 'xxx',    # id
+    'secret_access_key': 'xxx',    # 秘钥
+    'region': 'cn-north-1',     # 区域
+    's3_buckets': {    # buckets
+        'test': {    # bucket配置信息
+            'name': 'test',    # bucket名字
+            'img': {    # bucket文件夹
+                'path': 'img',
+            },
+        },
+    }
+}
