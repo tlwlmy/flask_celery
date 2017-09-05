@@ -66,7 +66,7 @@ def save_image():
     icon_name = '{0}/{1}'.format(path, icon_name)
 
     # 文件路径名
-    filename = '/tmp/{0}'.format(icon_name)
+    filename = 'images/{0}'.format(icon_name)
 
     # 保存图片
     icon = base64.b64decode(params['input']['icon'][22:])  # 去掉前面23个字符的标示符
