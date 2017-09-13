@@ -4,6 +4,8 @@
 # @author tlwlmy
 # @version 2017-03-06
 
+
+from io import BytesIO
 from app.test import test
 from app.common.functions import api_response, save_stream_img, md5
 from app.module.task_celery import task_celery
@@ -65,15 +67,16 @@ def save_image():
     # 文件路径名
     icon_name = '{0}/{1}'.format(path, icon_name)
 
-    # 文件路径名
-    filename = 'images/{0}'.format(icon_name)
-
     # 保存图片
     icon = base64.b64decode(params['input']['icon'][22:])  # 去掉前面23个字符的标示符
-    target = save_stream_img(filename, icon)
 
-    # 打开文件
-    fp = open(target, 'rb')
-    s3.Bucket(AWS['s3_buckets']['wxiao']['name']).put_object(Key=icon_name, Body=fp)
+    # 临时保存在缓存中
+    output = BytesIO()
+    output.write(icon)
+    img_data = output.getvalue()
+    output.close()
+
+    # 上传图片到s3
+    s3.Bucket(AWS['s3_buckets']['wxiao']['name']).put_object(Key=icon_name, Body=img_data)
 
     return api_response({'c': 0})
