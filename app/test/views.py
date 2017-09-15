@@ -5,6 +5,7 @@
 # @version 2017-03-06
 
 
+from random import randint
 from io import BytesIO
 from app.test import test
 from app.common.functions import api_response, save_stream_img, md5
@@ -18,7 +19,7 @@ def user_inform():
     # 测试通知用户信息
 
     message = {
-        'uid': 1,
+        'uid': randint(0, 30000),
         'inform': u'Hello Word!',
     }
 

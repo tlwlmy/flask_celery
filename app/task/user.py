@@ -11,6 +11,7 @@ from app.module.task_celery import task_celery
 from app import create_app, celery
 from app.common.functions import CJsonEncoder
 
+create_app().app_context().push()
 
 @celery.task
 def user_inform(message):
@@ -18,6 +19,4 @@ def user_inform(message):
 
     logger = loggers.get_logger('user_inform.log', 'celery')
 
-    app = create_app()
-    with app.test_request_context():
-        logger.info(json.dumps(message, cls=CJsonEncoder))
+    logger.info(json.dumps(message, cls=CJsonEncoder))
