@@ -5,11 +5,12 @@
 # @version 2017-02-17
 
 
-import json, random, string, hashlib
+import json, random, string, hashlib, os
 from decimal import Decimal
 from flask import jsonify, make_response, request
 from datetime import date, datetime
-from functools import wraps
+from functools import wraps, reduce
+from app.common.constant import CM_STATIC_PATH
 
 def api_response(contents, code=200):
     """返回API的响应
@@ -33,7 +34,7 @@ def cover_none(key):
 
 def random_lower_str(randomlength=5):
     # 随机长度字符串
-    return ''.join(random.sample(string.lowercase, randomlength))
+    return ''.join(random.sample(string.ascii_lowercase, randomlength))
 
 def random_int_str(randomlength=6):
     # 随机长度数字字符串
@@ -158,3 +159,31 @@ def compare_fields(white_fields, record, modify_info):
     final = {field: modify_info[field] for field in white_fields if field in modify_info.keys() and modify_info[field] != record[field]}
 
     return final
+
+def multi_lists_intersection(multi_lists):
+    """
+    多个列表交集
+    @params list final: 多个列表集合
+    @return list 返回交集列表
+    """
+
+    multi_lists = [set(lists) for lists in multi_lists]
+
+    return list(reduce(lambda x,y:x&y, multi_lists))
+
+def save_stream_img(filename, icon):
+    """
+    保存图片
+    """
+
+    # 文件位置
+    target = os.path.join(CM_STATIC_PATH, filename)
+
+    # 检查目录存不存在,如果不存在新建一个
+    if not os.path.exists(os.path.dirname(target)):
+        os.makedirs(os.path.dirname(target))
+
+    with open(target,'wb') as up:
+        up.write(icon)
+
+    return target

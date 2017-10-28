@@ -2,3 +2,4 @@
 config.py
 *.DS_Store
 app/static/node_modules
+*/__pycache__/*

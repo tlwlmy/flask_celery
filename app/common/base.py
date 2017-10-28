@@ -4,69 +4,101 @@
 # @author tlwlmy
 # @version 2017-02-17
 
-from sqlalchemy.ext.declarative import declarative_base
-from app.datasource import db
+from app import db
 from functools import wraps
 from app.common.functions import filter_fields, compare_fields
 
-base = declarative_base()
-
-class Base(base):
+class Base(db.Model):
     __abstract__ = True
 
     def validate(self):
         pass
 
     def save(self, validate=True, commit=False):
+        """ 保存 """
+
         if validate is True:
             self.validate()
-        db.add(self)
+        db.session.add(self)
         if commit is True:
-            db.commit()
+            db.session.commit()
 
     def _asdict(self):
-        # 获取参数字典
+        """ 获取参数字典 """
 
-        final = self.__dict__
-        if '_sa_instance_state' in final.keys():
-            del final['_sa_instance_state']
-        return final
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
+def get_primary_key(obj):
+    """ 获取主键名 """
+    return obj.__mapper__.primary_key[0].name
 
-def insert_filter(white_fields=[]):
-    # 插入参数过滤装饰器
-    def wrapper_fun(func):
-        @wraps(func)
-        def _wrapper_fun(*args, **kwargs):
+def model_insert(obj, modify_info):
+    """ 插入 """
 
-            # 过滤参数
-            kwargs['modify_info'] = filter_fields(white_fields, kwargs['modify_info'])
+    # 过滤参数
+    modify_info = filter_fields(obj._insert_fields, modify_info)
 
-            # 调用插入方法
-            record = func(*args, **kwargs)
-            record.save(commit=True)
+    # 插入参数
+    record = obj(**modify_info)
+    record.save(commit=True)
 
-            return record
-        return _wrapper_fun
-    return wrapper_fun
+    return record
 
-def update_filter(white_fields=[]):
-    # 更新参数过滤装饰器
-    def wrapper_fun(func):
-        @wraps(func)
-        def _wrapper_fun(*args, **kwargs):
+def model_update(obj, record, modify_info):
+    """ 更新 """
 
-            # 过滤参数
-            kwargs['modify_info'] = compare_fields(white_fields, kwargs['record'], kwargs['modify_info'])
-            if kwargs['modify_info']:
-                # 更新
-                affected_row = func(*args, **kwargs)
-                db.commit()
+    modify_info = compare_fields(obj._update_fields, record, modify_info)
 
-                return affected_row, kwargs['modify_info']
+    if not modify_info:
+        return {}
 
-            return 0, {}
+    # 获取主键
+    primary_key = get_primary_key(obj)
 
-        return _wrapper_fun
-    return wrapper_fun
+    # 更新数据
+    affected_row = obj.query.filter(getattr(obj, primary_key)==record[primary_key]).update(modify_info)
+    db.session.commit()
 
+    return modify_info
+
+def model_insert_multi(obj, modify_info):
+    """
+    批量插入
+    @params record dict: 返回类型 list表示列表 dict表示字典
+    @params modify_info dict: 字典类型key列表
+    """
+
+    # 过滤列表参数
+    for index in range(0, len(modify_info)):
+        modify_info[index] = filter_fields(obj._insert_fields, modify_info[index])
+
+    # 批量插入
+    record = [obj(**modify_info[index]) for index in range(0, len(modify_info))]
+    db.session.add_all(record)
+    db.session.commit()
+
+    return record
+
+def model_update_multi(obj, record, modify_info):
+    """
+    批量更新
+    @params record dict: 返回类型 list表示列表 dict表示字典
+    @params modify_info dict: 字典类型key列表
+    """
+
+    # 过滤列表参数
+    for ukey in modify_info.keys():
+        if ukey in record.keys():
+            modify_info[ukey] = compare_fields(obj._update_fields, record[ukey], modify_info[ukey])
+
+    # 获取主键
+    primary_key = get_primary_key(obj)
+
+    # 更新列表数据
+    for ukey in modify_info.keys():
+        if modify_info[ukey] and ukey in record.keys():
+            affected_row = obj.query.filter(getattr(obj, primary_key)==record[ukey][primary_key]).update(modify_info[ukey])
+
+    db.session.commit()
+
+    return modify_info

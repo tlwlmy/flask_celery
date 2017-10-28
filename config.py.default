@@ -14,7 +14,13 @@ PORT = 5001
 
 MONGO_URI = "mongodb://127.0.0.1:27017"
 
-SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:tlwlmy@127.0.0.1:3306/dream?charset=utf8'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://tlwlmy:pass@127.0.0.1:3306/dream?charset=utf8'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+# 数据库路由选择
+SQLALCHEMY_BINDS = {
+    'test': 'mysql+pymysql://tlwlmy:pass@127.0.0.1:3306/test?charset=utf8'
+}
 
 REDIS = {
     'host': 'localhost',
@@ -39,10 +45,25 @@ CM_STATIC_URL = 'http://127.0.0.1:5000/static/'
 # CELERY_BROKER_URL = 'redis://localhost:6379/10'
 # CELERY_RESULT_BACKEND = 'redis://localhost:6379/10'
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
-CELERY_RESULT_BACKEND = 'amqp://guest:guest@localhost:5672//'
+CELERY_RESULT_BACKEND ='rpc'
+# CELERY_RESULT_BACKEND = 'amqp://guest:guest@localhost:5672//'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_ENABLE_UTC = True
 CELERYD_LOG_COLOR = False
+
+AWS = {
+    'access_key_id': 'xxx',    # id
+    'secret_access_key': 'xxx',    # 秘钥
+    'region': 'cn-north-1',     # 区域
+    's3_buckets': {    # buckets
+        'test': {    # bucket配置信息
+            'name': 'test',    # bucket名字
+            'img': {    # bucket文件夹
+                'path': 'img',
+            },
+        },
+    }
+}
