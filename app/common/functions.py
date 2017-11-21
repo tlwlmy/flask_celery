@@ -142,9 +142,7 @@ def get_remote_ip():
     # 获取ip地址
     if 'X-Forwarded-For' in request.headers.keys():
         remote_ip = request.headers.getlist('X-Forwarded-For')[0]
-        if remote_ip and remote_ip.find(","):
-            remote_ip = remote_ip.split(',')[0]
-        return remote_ip
+        return remote_ip.split(',')[0]
     elif 'X-Real-Ip' in request.headers.keys():
         return request.headers['X-Real-Ip']
     return request.remote_addr
