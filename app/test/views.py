@@ -9,13 +9,15 @@ from random import randint
 from io import BytesIO
 from app.test import test
 from app.common.functions import api_response, save_stream_img, md5
+from app.validate.functions import validate_params
 from app.module.task_celery import task_celery
 from app.common.constant import *
 from app.datasource import s3
 from config import AWS
 
 @test.route('/user_inform', methods=['GET'])
-def user_inform():
+@validate_params
+def user_inform(params):
     # 测试通知用户信息
 
     message = {
