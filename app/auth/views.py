@@ -46,6 +46,13 @@ def insert_multi():
 
     return api_response(record)
 
+@auth.route('/update', methods=['POST'])
+def update(params):
+
+    record = auth_db.query_user_by_name(params['input']['name'])
+    auth_db.update_user(record, params['input'])
+    return api_response({'c'})
+
 @auth.route('/update_multi', methods=['GET'])
 def update_multi():
     """ 批量更新 """
