@@ -196,7 +196,8 @@ def del_cached(keys=['record', 'modify_info'], func_type='class', check=False):
             # 删除缓存
             from app.common.config_cache.functions import get_config_cache_map
             config_cache_map = get_config_cache_map(func.__module__)
-            config_cache_map[func.__name__](final)
+            if func.__name__ in config_cache_map.keys():
+                config_cache_map[func.__name__](final)
 
             return result
 
