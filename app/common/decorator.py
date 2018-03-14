@@ -5,12 +5,15 @@
 # @version 2017-02-17
 
 import pickle
-from app.datasource import redis_store
-from app import db
-from flask import request, make_response
 from functools import wraps
+
+from flask import request, make_response
+
+from app import db
 from app.common.constant import Duration
 from app.common.functions import multi_lists_intersection
+from app.datasource import redis_store
+
 
 def format_record(record, rtype, dict_keys):
     """
@@ -194,7 +197,7 @@ def del_cached(keys=['record', 'modify_info'], func_type='class', check=False):
                 return result
 
             # 删除缓存
-            from app.common.config_cache.functions import get_config_cache_map
+            from app.config_cache.functions import get_config_cache_map
             config_cache_map = get_config_cache_map(func.__module__)
             if func.__name__ in config_cache_map.keys():
                 config_cache_map[func.__name__](final)
@@ -226,7 +229,7 @@ def del_multi_cached(keys=['record', 'modify_info'], func_type='class', rtype='d
             final['result'] = result
 
             # 删除缓存
-            from app.common.config_cache.functions import get_config_cache_map
+            from app.config_cache.functions import get_config_cache_map
             config_cache_map = get_config_cache_map(func.__module__)
 
             # 检查数据类型

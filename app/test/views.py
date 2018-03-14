@@ -31,6 +31,7 @@ def user_inform(params):
 
     return api_response(message)
 
+
 @test.route('/save_image', methods=['GET'])
 def save_image():
     """
