@@ -5,6 +5,7 @@
 # @version 2017-02-17
 
 from app import db
+from sqlalchemy import exc
 from functools import wraps
 from app.common.functions import filter_fields, compare_fields
 
@@ -21,7 +22,10 @@ class Base(db.Model):
             self.validate()
         db.session.add(self)
         if commit is True:
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.IntegrityError as e:
+                db.session().rollback()
 
     def _asdict(self):
         """ 获取参数字典 """
