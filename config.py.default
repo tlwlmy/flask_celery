@@ -12,7 +12,7 @@ HOST = '0.0.0.0'
 
 PORT = 5001
 
-MONGO_URI = "mongodb://127.0.0.1:27017"
+MONGO_URI = 'mongodb://127.0.0.1:27017'
 
 # sentry客户端密钥
 SENTRY_DSN = 'http://299d9e995cfb4ac991ca7d87bd3ad787:2425413a81454133b446a779a6a81d4f@sentry.jituia.cn/9'
@@ -39,7 +39,7 @@ SESSION_TYPE = 'redis'
 SESSION_REDIS = redis.Redis(host='localhost',port=6379,db=0)
 
 ROOT_PATH = '/home/jtserver/vhost/gateway/flask_celery'
-LOG_PATH = "/home/jtserver/log/flask_celery/production-default.log" # 默认日志路径
+LOG_PATH = '/home/jtserver/log/flask_celery/production-default.log' # 默认日志路径
 
 # 静态文件url
 CM_STATIC_URL = 'http://127.0.0.1:5000/static/'
