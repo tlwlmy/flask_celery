@@ -6,6 +6,8 @@
 
 import redis
 
+# ENV = "development"    // 默认production
+
 DEBUG = True
 
 HOST = '0.0.0.0'
