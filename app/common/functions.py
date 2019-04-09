@@ -7,6 +7,7 @@
 
 import json, random, string, hashlib, os
 from decimal import Decimal
+from urllib.request import Request, urlopen
 from flask import jsonify, make_response, request
 from datetime import date, datetime
 from functools import wraps, reduce
@@ -190,3 +191,22 @@ def save_stream_img(filename, icon):
         up.write(icon)
 
     return target
+
+def save_url_img(img_url, target):
+    """
+    保存url图片
+    """
+    if not os.path.exists(os.path.dirname(target)):
+        os.makedirs(os.path.dirname(target))
+
+    if os.path.exists(target):
+        return
+
+    req = Request(img_url)
+    socket = urlopen(req)
+
+    fp = open(target, 'w+b')
+    fp.write(socket.read())
+    fp.close()
+
+    socket.close()
