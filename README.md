@@ -11,3 +11,6 @@ sudo apt-get install python3 python-dev python3-dev \
 pip uninstall Crypto
 pip uninstall pycrypto
 pip install pycryptodome
+
+* 'sqlalchemy.cimmutabledict.immutabledict' object has no attribute 'setdefault'
+pip install --upgrade 'SQLAlchemy<1.4'
